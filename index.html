@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PVU Plan Integracion F2.1 - Septiembre 2026</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PVU F2.1">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(156, 163, 175, 0.35); border-radius: 9999px; }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.90; transform: scale(1.02); }
+    }
+    .badge-pulse { animation: pulse-subtle 2.5s infinite ease-in-out; }
+    .live-dot { animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Encabezado Principal -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-30 px-4 lg:px-8 py-3.5 transition-all">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+      
+      <!-- Logo y Título -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25 text-white font-bold text-lg shrink-0">
+          09
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h1 class="text-lg font-bold tracking-tight text-white">PVU Plan Integracion F2.1</h1>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              Septiembre 2026
+            </span>
+            <!-- Indicador en vivo -->
+            <span id="sync-status-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5" title="Sincronizado en tiempo real para todos los usuarios">
+              <span class="relative flex h-2 w-2">
+                <span class="live-dot absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span id="sync-status-text">Conectando...</span>
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Roadmap colaborativo en tiempo real</p>
+        </div>
+      </div>
+
+      <!-- Acciones y Perfil de Usuario -->
+      <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-end">
+        
+        <!-- Botón Configurar Firebase -->
+        <button id="btn-open-firebase-config" class="px-2.5 py-2 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 transition flex items-center gap-1.5 active:scale-95 shadow-sm" title="Configurar credenciales de Firebase">
+          <span>⚙️</span> Firebase
+        </button>
+
+        <!-- Perfil cuando el usuario inicia sesión -->
+        <div id="user-profile-badge" class="hidden items-center gap-2 bg-slate-800/90 border border-slate-700/80 rounded-xl px-2.5 py-1.5 shadow-sm">
+          <img id="user-avatar" class="w-7 h-7 rounded-full border border-indigo-400/50 object-cover" src="https://placehold.co/100x100/4f46e5/ffffff?text=U" alt="Usuario" onerror="this.src='https://placehold.co/100x100/4f46e5/ffffff?text=U'">
+          <div class="flex flex-col text-left">
+            <span id="user-display-name" class="text-xs font-bold text-slate-100 max-w-[130px] truncate">Usuario</span>
+            <span id="user-display-email" class="text-[10px] text-slate-400 max-w-[130px] truncate">correo@gmail.com</span>
+          </div>
+          <button id="btn-logout" class="ml-1 p-1 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-700/50 transition" title="Cerrar sesión">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          </button>
+        </div>
+
+        <!-- Botón de Inicio de Sesión Google (Visible si no ha iniciado sesión) -->
+        <button id="btn-header-login" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-white text-slate-900 hover:bg-slate-100 transition flex items-center gap-2 shadow-md active:scale-95">
+          <svg class="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          Ingresar con Google
+        </button>
+
+        <!-- Sincronización personal y .iCal -->
+        <button id="btn-sync-personal" class="px-3 py-2 rounded-lg text-xs font-semibold bg-emerald-600/90 hover:bg-emerald-500 text-white transition flex items-center gap-1.5 shadow-sm active:scale-95">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          Sincronizar
+        </button>
+
+        <button id="btn-export-ics" class="px-2.5 py-2 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5 active:scale-95 shadow-sm" title="Descargar archivo iCalendar">
+          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          .iCal
+        </button>
+
+        <!-- Botón Nuevo Hito -->
+        <button id="btn-new-milestone" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 transition flex items-center gap-2 active:scale-95">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          Nuevo Hito
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto w-full px-4 lg:px-8 py-6 flex-1 flex flex-col gap-6">
+
+    <!-- Tarjetas Métricas KPI -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
+      <div class="bg-slate-800/60 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] text-slate-400 font-medium">Hitos Totales</p>
+          <h3 id="stat-total" class="text-2xl font-bold text-white mt-0.5">0</h3>
+        </div>
+        <div class="w-9 h-9 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-sm">📅</div>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] text-slate-400 font-medium">Completados</p>
+          <h3 id="stat-completed" class="text-2xl font-bold text-emerald-400 mt-0.5">0</h3>
+        </div>
+        <div class="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-sm">✓</div>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] text-slate-400 font-medium">En Curso (Hoy)</p>
+          <h3 id="stat-in-progress" class="text-2xl font-bold text-amber-400 mt-0.5">0</h3>
+        </div>
+        <div class="w-9 h-9 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-sm">⚡</div>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] text-slate-400 font-medium">Atrasados</p>
+          <h3 id="stat-delayed" class="text-2xl font-bold text-rose-400 mt-0.5">0</h3>
+        </div>
+        <div class="w-9 h-9 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center font-bold text-sm">⚠️</div>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between col-span-2 md:col-span-1">
+        <div>
+          <p class="text-[11px] text-slate-400 font-medium">Progreso Global</p>
+          <h3 id="stat-percent" class="text-2xl font-bold text-sky-400 mt-0.5">0%</h3>
+        </div>
+        <div class="w-10 h-10 flex items-center justify-center">
+          <div class="relative w-9 h-9">
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+              <path class="text-slate-700" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path id="stat-svg-circle" class="text-indigo-500 transition-all duration-500" stroke-dasharray="0, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de Filtros y Búsqueda -->
+    <div class="bg-slate-800/80 backdrop-blur border border-slate-800 rounded-xl p-3 sm:p-4 flex flex-col md:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
+        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider mr-1">Filtrar:</span>
+        <button class="filter-btn active px-3 py-1 rounded-lg text-xs font-medium bg-indigo-600 text-white transition" data-filter="all">Todos</button>
+        <button class="filter-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition" data-filter="genesys">Genesys</button>
+        <button class="filter-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition" data-filter="release">Release</button>
+        <button class="filter-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition" data-filter="dev">Desarrollo</button>
+        <button class="filter-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition" data-filter="qa">Testing</button>
+      </div>
+
+      <div class="relative w-full md:w-64">
+        <input type="text" id="search-input" placeholder="Buscar hito o responsable..." class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg pl-8 pr-3 py-2 focus:outline-none focus:border-indigo-500 transition placeholder:text-slate-500">
+        <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      </div>
+    </div>
+
+    <!-- Contenedor del Calendario Mensual -->
+    <div class="bg-slate-800/40 border border-slate-800 rounded-2xl shadow-xl overflow-hidden flex flex-col flex-1">
+      <div class="grid grid-cols-7 border-b border-slate-800 bg-slate-800/90 text-center text-xs font-bold text-slate-300 py-3 tracking-wider uppercase">
+        <div class="text-indigo-300">Lu</div>
+        <div>Ma</div>
+        <div>Mi</div>
+        <div>Ju</div>
+        <div>Vi</div>
+        <div class="text-rose-300/80">Sa</div>
+        <div class="text-rose-300/80">Do</div>
+      </div>
+
+      <!-- Cuadrícula interactiva -->
+      <div id="calendar-grid" class="grid grid-cols-7 auto-rows-fr gap-[1px] bg-slate-800/60 flex-1 min-h-[580px]">
+        <!-- Renderizado dinámico -->
+      </div>
+    </div>
+
+    <!-- Registro Detallado y Colaboración -->
+    <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-4 sm:p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-base font-semibold text-white flex items-center gap-2">
+          <span>📋</span> Registro Detallado y Colaboración en Vivo
+        </h2>
+        <span class="text-xs text-slate-400">Los cambios que guardes se sincronizan automáticamente para todos</span>
+      </div>
+      <div id="milestones-table-container" class="space-y-3 custom-scrollbar overflow-y-auto max-h-[520px] pr-1">
+        <!-- Tarjetas renderizadas -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal para Iniciar Sesión con Google -->
+  <div id="auth-modal-backdrop" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative text-center">
+      <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white font-bold text-2xl shadow-xl shadow-indigo-500/25 mb-4">
+        09
+      </div>
+      <h3 class="text-xl font-bold text-white mb-1">Acceso a PVU Plan Integración F2.1</h3>
+      <p class="text-xs text-slate-400 mb-6 leading-relaxed">
+        Inicia sesión con tu cuenta de Google para perfilar tu usuario, gestionar los hitos y colaborar en tiempo real con todo el equipo.
+      </p>
+
+      <button id="btn-modal-google-login" class="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-semibold text-sm transition flex items-center justify-center gap-3 shadow-lg active:scale-95 border border-slate-300">
+        <svg class="w-5 h-5" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        Continuar con Google
+      </button>
+
+      <div class="mt-4 text-[11px] text-slate-500">
+        Los cambios realizados se guardan en la nube para todo el equipo.
+      </div>
+      <button type="button" id="auth-modal-close" class="mt-4 text-xs text-slate-400 hover:text-white underline decoration-dotted">
+        Cerrar y continuar en modo local
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal para Configuración de Credenciales de Firebase -->
+  <div id="firebase-config-modal-backdrop" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-left">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">⚙️</span>
+          <div>
+            <h3 class="text-base font-bold text-white">Configuración de Firebase</h3>
+            <p class="text-xs text-slate-400">Pega aquí las claves de tu proyecto de Firebase</p>
+          </div>
+        </div>
+        <button id="firebase-modal-close" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
+          ✕
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-3">
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Puedes ingresar tus credenciales directamente aquí para guardarlas en este navegador, o editarlas en el archivo <code class="text-indigo-300 font-mono">index.html</code>:
+        </p>
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-300 mb-1">API Key</label>
+          <input type="text" id="cfg-apiKey" placeholder="AIzaSy..." class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Auth Domain</label>
+            <input type="text" id="cfg-authDomain" placeholder="proyecto.firebaseapp.com" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Project ID</label>
+            <input type="text" id="cfg-projectId" placeholder="tu-proyecto" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Storage Bucket</label>
+            <input type="text" id="cfg-storageBucket" placeholder="proyecto.appspot.com" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">App ID</label>
+            <input type="text" id="cfg-appId" placeholder="1:123456:web:abcd..." class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5 flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+        <button type="button" id="cfg-btn-clear" class="px-3 py-2 text-xs font-medium text-rose-400 hover:bg-rose-500/10 rounded-lg transition mr-auto">
+          Borrar Claves
+        </button>
+        <button type="button" id="cfg-btn-cancel" class="px-3 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800 rounded-lg transition">
+          Cancelar
+        </button>
+        <button type="button" id="cfg-btn-save" class="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-md transition active:scale-95">
+          💾 Guardar y Conectar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Edición de Hitos -->
+  <div id="modal-backdrop" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden items-center justify-center p-3 sm:p-4 transition-opacity duration-200 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full shadow-2xl relative my-auto flex flex-col max-h-[92vh] overflow-hidden">
+      
+      <!-- Botón Guardar Fijo Superior -->
+      <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-slate-900 shrink-0">
+        <div class="flex items-center gap-2">
+          <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-base">📌</span>
+          <div>
+            <h3 id="modal-title" class="text-base font-bold text-white leading-tight">Detalle del Hito</h3>
+            <p class="text-[11px] text-slate-400">Edita los campos y presiona Guardar para sincronizar en vivo</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" id="modal-header-btn-save" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow-md shadow-emerald-600/30 flex items-center gap-1.5 active:scale-95 transition focus:ring-2 focus:ring-emerald-400">
+            <span>💾</span>
+            <span>Guardar</span>
+          </button>
+          <button id="modal-close" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition" title="Cerrar">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <form id="milestone-form" class="flex flex-col flex-1 overflow-hidden">
+        <input type="hidden" id="form-id" value="">
+        
+        <div class="p-5 overflow-y-auto custom-scrollbar space-y-4 flex-1">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Día de Septiembre</label>
+              <select id="form-day" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                <!-- Días 1 al 30 -->
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Estado del Hito</label>
+              <select id="form-status" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                <option value="auto">🤖 Automático (según fecha sistema)</option>
+                <option value="completed">✅ Completado (marcado por usuario)</option>
+                <option value="pending">⏳ Pendiente / Programado</option>
+                <option value="in_progress">⚡ En Progreso / Ejecución</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Título del Hito</label>
+            <input type="text" id="form-title" required placeholder="Ej: GENESYS TICKET" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 font-semibold">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Categoría / Tag</label>
+            <select id="form-tag" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+              <option value="genesys">Genesys</option>
+              <option value="release">Release</option>
+              <option value="dev">Desarrollo</option>
+              <option value="qa">Testing / QA</option>
+              <option value="business">Negocio / Operativo</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Responsable (Nombre)</label>
+              <input type="text" id="form-assignee-name" placeholder="Ej: Carlos Silva" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Correo del Responsable</label>
+              <input type="email" id="form-assignee-email" placeholder="carlos.silva@empresa.com" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Sub-tareas / Entregables</label>
+            <div class="flex gap-2 mb-2">
+              <input type="text" id="form-subtask-input" placeholder="Añadir sub-tarea..." class="flex-1 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-indigo-500">
+              <button type="button" id="btn-add-subtask" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-100 text-xs font-medium rounded-lg transition active:scale-95 flex items-center gap-1">
+                <span>+</span> Agregar
+              </button>
+            </div>
+            <div id="form-subtasks-list" class="space-y-1 max-h-32 overflow-y-auto custom-scrollbar p-1.5 bg-slate-950/40 rounded-lg border border-slate-800/80">
+              <!-- Pastillas de subtareas -->
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Observaciones / Detalles</label>
+            <textarea id="form-details" rows="2" placeholder="Detalles de tickets, acuerdos, o notas técnicas" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"></textarea>
+          </div>
+        </div>
+
+        <div class="px-5 py-3.5 bg-slate-900 border-t border-slate-800 shrink-0 flex items-center justify-between gap-3">
+          <button type="button" id="form-btn-delete" class="text-xs text-rose-400 hover:text-rose-300 font-medium px-3 py-2 rounded-lg hover:bg-rose-500/10 transition hidden flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            Eliminar
+          </button>
+          <div class="flex items-center gap-2.5 ml-auto">
+            <button type="button" id="form-btn-cancel" class="px-4 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800 rounded-lg transition">Cancelar</button>
+            <button type="submit" id="form-btn-submit" class="px-5 py-2.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-lg shadow-emerald-600/30 transition flex items-center gap-2 active:scale-95 focus:ring-2 focus:ring-emerald-400">
+              <span class="text-sm">💾</span> Guardar Cambios
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Sincronización Personal -->
+  <div id="sync-modal-backdrop" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full shadow-2xl p-6 relative">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <span class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg font-bold">📲</span>
+          <div>
+            <h3 class="text-base font-bold text-white">Sincronización de Calendarios</h3>
+            <p class="text-xs text-slate-400">Exporta los hitos hacia tu agenda personal</p>
+          </div>
+        </div>
+        <button id="sync-modal-close" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4">
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Selecciona tu plataforma preferida para importar los hitos del PVU F2.1 junto con los feriados nacionales oficiales de Septiembre:
+        </p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <button id="sync-google-cal" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 flex items-center gap-2.5 text-left transition group">
+            <span class="w-8 h-8 rounded-lg bg-red-500/15 text-red-400 flex items-center justify-center font-bold text-sm">G</span>
+            <div>
+              <p class="text-xs font-bold text-slate-100">Google Calendar</p>
+              <p class="text-[10px] text-slate-400">Abrir consola de importación</p>
+            </div>
+          </button>
+
+          <button id="sync-outlook-cal" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 flex items-center gap-2.5 text-left transition group">
+            <span class="w-8 h-8 rounded-lg bg-sky-500/15 text-sky-400 flex items-center justify-center font-bold text-sm">O</span>
+            <div>
+              <p class="text-xs font-bold text-slate-100">Outlook / O365</p>
+              <p class="text-[10px] text-slate-400">Importar archivo .ics</p>
+            </div>
+          </button>
+
+          <button id="sync-apple-cal" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 flex items-center gap-2.5 text-left transition group">
+            <span class="w-8 h-8 rounded-lg bg-slate-700 text-slate-200 flex items-center justify-center font-bold text-sm">🍏</span>
+            <div>
+              <p class="text-xs font-bold text-slate-100">Apple Calendar</p>
+              <p class="text-[10px] text-slate-400">iPhone, iPad o Mac</p>
+            </div>
+          </button>
+
+          <button id="sync-direct-ics" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 flex items-center gap-2.5 text-left transition group">
+            <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-bold text-sm">📥</span>
+            <div>
+              <p class="text-xs font-bold text-slate-100">Descarga Directa</p>
+              <p class="text-[10px] text-slate-400">Archivo iCal (.ics)</p>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificación Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-800 border border-slate-700 shadow-2xl rounded-xl px-4 py-3 text-xs text-slate-200 flex items-center gap-2.5 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <span id="toast-icon">✨</span>
+    <span id="toast-message">Acción realizada exitosamente</span>
+  </div>
+
+  <!-- SCRIPT CON FIREBASE EN TIEMPO REAL -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithPopup, 
+      GoogleAuthProvider, 
+      signOut, 
+      onAuthStateChanged,
+      signInWithCustomToken,
+      signInAnonymously 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      deleteDoc, 
+      onSnapshot, 
+      collection 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // =========================================================================
+    // 👉 PASO 4 (ACTIVIDAD 5): PEGA AQUÍ TUS CREDENCIALES EXACTAS DE FIREBASE
+    // =========================================================================
+    let firebaseConfig = {
+      apiKey: "AIzaSyD-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      authDomain: "tu-proyecto.firebaseapp.com",
+      projectId: "tu-proyecto",
+      storageBucket: "tu-proyecto.appspot.com",
+      messagingSenderId: "123456789012",
+      appId: "1:123456789012:web:abcdef1234567890abcdef"
+    };
+    // =========================================================================
+
+    // Cargar credenciales guardadas en el navegador si existen
+    try {
+      const storedCfg = localStorage.getItem('pvu_firebase_config_custom');
+      if (storedCfg) {
+        const parsed = JSON.parse(storedCfg);
+        if (parsed && parsed.apiKey) {
+          firebaseConfig = { ...firebaseConfig, ...parsed };
+        }
+      }
+    } catch(e) {
+      console.warn("Storage check:", e);
+    }
+
+    // Verificación de credenciales reales vs placeholders
+    function hasValidFirebaseKeys(cfg) {
+      if (!cfg || !cfg.apiKey) return false;
+      const key = cfg.apiKey.trim();
+      if (key.includes("xxxx") || key === "AIzaSyD-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" || key.length < 15) {
+        return false;
+      }
+      if (cfg.projectId && cfg.projectId.includes("tu-proyecto")) {
+        return false;
+      }
+      return true;
+    }
+
+    const isFirebaseConfigured = hasValidFirebaseKeys(firebaseConfig);
+    const appId = 'pvu-f21-septiembre';
+
+    let app = null;
+    let auth = null;
+    let db = null;
+    let currentUser = null;
+
+    if (isFirebaseConfigured) {
+      try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+      } catch (err) {
+        console.warn("Firebase initialization note:", err);
+      }
+    } else {
+      console.info("Firebase: Operando en modo local/offline. Ingresa tus claves para activar la sincronización en la nube.");
+    }
+
+    const CHILE_HOLIDAYS_SEP_2026 = {
+      18: {
+        title: 'Fiestas Patrias',
+        subtitle: 'Feriado Nacional Irrenunciable',
+        badge: '🇨🇱 18 Sep',
+        desc: 'Conmemoración de la Primera Junta Nacional de Gobierno.'
+      },
+      19: {
+        title: 'Glorias del Ejército',
+        subtitle: 'Feriado Nacional Irrenunciable',
+        badge: '🇨🇱 19 Sep',
+        desc: 'Día de las Glorias del Ejército de Chile.'
+      }
+    };
+
+    const INITIAL_MILESTONES = [
+      {
+        id: 'm1',
+        day: 3,
+        title: 'GENESYS TICKET',
+        tag: 'genesys',
+        details: 'Hito On Premise - Creación y validación de Ticket Genesys',
+        completedByUser: false,
+        userOverrideStatus: null,
+        assigneeName: 'Andrés Morales',
+        assigneeEmail: 'andres.morales@empresa.com',
+        subtasks: ['Revisión requerimiento', 'Emisión ticket técnico']
+      },
+      {
+        id: 'm2',
+        day: 4,
+        title: 'MAPEO NEGOCIO',
+        tag: 'business',
+        details: 'Definición y validación de matriz de mapeo con equipo de negocio',
+        completedByUser: false,
+        userOverrideStatus: null,
+        assigneeName: 'Beatriz Peña',
+        assigneeEmail: 'beatriz.pena@empresa.com',
+        subtasks: ['Levantamiento reglas', 'Aprobación de campos']
+      },
+      {
+        id: 'm3',
+        day: 7,
+        title: 'DEV INTEGRACIÓN DATOS GENESYS',
+        tag: 'genesys',
+        details: 'Desarrollo de pipeline y componentes de integración de datos con Genesys',
+        completedByUser: false,
+        userOverrideStatus: null,
+        assigneeName: 'Carlos Silva',
+        assigneeEmail: 'carlos.silva@empresa.com',
+        subtasks: ['Endpoints base', 'Validación payload']
+      },
+      {
+        id: 'm4',
+        day: 10,
+        title: 'RELEASE',
+        tag: 'release',
+        details: 'Pase a producción / Staging de componentes críticos',
+        completedByUser: false,
+        userOverrideStatus: null,
+        assigneeName: 'Equipo Devops / Release',
+        assigneeEmail: 'release-team@empresa.com',
+        subtasks: [
+          'Internalización Genesys',
+          'Ticket Exposición SRV Reverse',
+          'Swagger INT'
+        ]
+      },
+      {
+        id: 'm5',
+        day: 15,
+        title: 'TEST DEV INT',
+        tag: 'qa',
+        details: 'Ciclo de pruebas de integración con el entorno DEV',
+        completedByUser: false,
+        userOverrideStatus: null,
+        assigneeName: 'Daniela Castro',
+        assigneeEmail: 'daniela.castro@empresa.com',
+        subtasks: ['Pruebas de conectividad', 'Escenarios de estrés']
+      },
+      {
+        id: 'm6',
+        day: 16,
+        title: 'ECOMM DEV',
+        tag: 'dev',
+        details: 'Desarrollo y ajustes de conectores para módulo E-Commerce',
+        completedByUser: false,
+        userOverrideStatus: null,
+        assigneeName: 'Eduardo Rivas',
+        assigneeEmail: 'eduardo.rivas@empresa.com',
+        subtasks: ['Checkout sync', 'Catálogo']
+      },
+      {
+        id: 'm7',
+        day: 21,
+        title: 'Fin Desarrollo MAT',
+        tag: 'dev',
+        details: 'Cierre formal y finalización de los desarrollos asignados al componente MAT',
+        completedByUser: false,
+        userOverrideStatus: null,
+        assigneeName: 'Felipe Gómez',
+        assigneeEmail: 'felipe.gomez@empresa.com',
+        subtasks: ['Documentación técnica', 'Congelamiento código MAT']
+      }
+    ];
+
+    // Cargar hitos de localStorage si estamos en modo local
+    function loadSavedMilestones() {
+      try {
+        const local = localStorage.getItem('pvu_local_milestones');
+        if (local) {
+          const parsed = JSON.parse(local);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch(e) {}
+      return JSON.parse(JSON.stringify(INITIAL_MILESTONES));
+    }
+
+    let milestones = loadSavedMilestones();
+    let activeFilter = 'all';
+    let searchQuery = '';
+    let inlineEditingId = null;
+
+    function saveMilestonesLocal() {
+      try {
+        localStorage.setItem('pvu_local_milestones', JSON.stringify(milestones));
+      } catch(e) {}
+    }
+
+    const TAG_CONFIG = {
+      genesys: { label: 'Genesys', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30', text: 'text-cyan-300', dot: 'bg-cyan-400' },
+      release: { label: 'Release', bg: 'bg-rose-500/15', border: 'border-rose-500/40', text: 'text-rose-300', dot: 'bg-rose-400' },
+      dev: { label: 'Desarrollo', bg: 'bg-indigo-500/15', border: 'border-indigo-500/30', text: 'text-indigo-300', dot: 'bg-indigo-400' },
+      qa: { label: 'Testing', bg: 'bg-amber-500/15', border: 'border-amber-500/30', text: 'text-amber-300', dot: 'bg-amber-400' },
+      business: { label: 'Negocio', bg: 'bg-emerald-500/15', border: 'border-emerald-500/30', text: 'text-emerald-300', dot: 'bg-emerald-400' }
+    };
+
+    const STATUS_CONFIG = {
+      pending: { label: 'Pendiente', badge: 'bg-slate-700/60 text-slate-300 border border-slate-600/40' },
+      in_progress: { label: 'En Progreso (Hoy)', badge: 'bg-amber-500/20 text-amber-300 border border-amber-500/30' },
+      delayed: { label: 'Atrasado', badge: 'bg-rose-500/20 text-rose-300 border border-rose-500/30' },
+      completed: { label: 'Completado ✓', badge: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }
+    };
+
+    function getEffectiveStatus(m) {
+      if (m.completedByUser === true) return 'completed';
+      if (m.userOverrideStatus && m.userOverrideStatus !== 'auto' && m.userOverrideStatus !== 'completed') {
+        return m.userOverrideStatus;
+      }
+
+      const sysNow = new Date();
+      const currentYear = sysNow.getFullYear();
+      const currentMonth = sysNow.getMonth();
+      const currentDay = sysNow.getDate();
+
+      if (currentYear === 2026 && currentMonth === 8) {
+        if (currentDay < m.day) return 'pending';
+        if (currentDay === m.day) return 'in_progress';
+        return 'delayed';
+      } else {
+        const targetDate = new Date(2026, 8, m.day, 23, 59, 59);
+        if (sysNow.getTime() < new Date(2026, 8, m.day, 0, 0, 0).getTime()) return 'pending';
+        if (sysNow.getTime() <= targetDate.getTime()) return 'in_progress';
+        return 'delayed';
+      }
+    }
+
+    function showToast(msg, icon = '✓') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      const toastIcon = document.getElementById('toast-icon');
+      
+      toastMsg.innerText = msg;
+      toastIcon.innerText = icon;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3200);
+    }
+
+    function updateMetrics() {
+      const total = milestones.length;
+      const completed = milestones.filter(m => m.completedByUser === true).length;
+      const inProgress = milestones.filter(m => getEffectiveStatus(m) === 'in_progress').length;
+      const delayed = milestones.filter(m => getEffectiveStatus(m) === 'delayed').length;
+      const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+      document.getElementById('stat-total').innerText = total;
+      document.getElementById('stat-completed').innerText = completed;
+      document.getElementById('stat-in-progress').innerText = inProgress;
+      document.getElementById('stat-delayed').innerText = delayed;
+      document.getElementById('stat-percent').innerText = `${pct}%`;
+
+      const circle = document.getElementById('stat-svg-circle');
+      if (circle) {
+        circle.setAttribute('stroke-dasharray', `${pct}, 100`);
+      }
+    }
+
+    function renderCalendar() {
+      const grid = document.getElementById('calendar-grid');
+      grid.innerHTML = '';
+
+      const leadingEmptyDays = 1; // 1 Sep 2026 cae martes
+      const totalDaysInSeptember = 30;
+
+      for (let i = 0; i < leadingEmptyDays; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'bg-slate-900/40 p-2 border border-slate-800/40 min-h-[105px] select-none text-slate-600 text-xs font-semibold';
+        emptyCell.innerHTML = `<span class="opacity-25">31 Ago</span>`;
+        grid.appendChild(emptyCell);
+      }
+
+      for (let day = 1; day <= totalDaysInSeptember; day++) {
+        const dayCell = document.createElement('div');
+        const dayNumberFormatted = day < 10 ? `0${day}` : `${day}`;
+        const dayOfWeekIndex = (leadingEmptyDays + day - 1) % 7;
+        const isWeekend = dayOfWeekIndex === 5 || dayOfWeekIndex === 6;
+        const chileHoliday = CHILE_HOLIDAYS_SEP_2026[day];
+
+        const dayMilestones = milestones.filter(m => {
+          const matchDay = m.day === day;
+          const matchFilter = activeFilter === 'all' || m.tag === activeFilter;
+          const matchSearch = searchQuery === '' || 
+            m.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            (m.details && m.details.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (m.assigneeName && m.assigneeName.toLowerCase().includes(searchQuery.toLowerCase()));
+          return matchDay && matchFilter && matchSearch;
+        });
+
+        const hasMilestone = dayMilestones.length > 0;
+        const hasWhiteboardSquare = [3, 4, 7, 10, 15, 16, 21].includes(day);
+
+        dayCell.className = `group relative p-2 sm:p-2.5 transition flex flex-col justify-between min-h-[115px] ${
+          chileHoliday 
+            ? 'bg-gradient-to-b from-red-950/30 via-slate-900/90 to-blue-950/20 border-t-2 border-t-red-500/80 ring-1 ring-inset ring-red-500/20' 
+            : isWeekend ? 'bg-slate-900/50' : 'bg-slate-900/80 hover:bg-slate-800/60'
+        } ${hasMilestone ? 'ring-1 ring-inset ring-indigo-500/20' : ''}`;
+
+        let dayHeaderHtml = `
+          <div class="flex items-center justify-between mb-1.5">
+            <div class="flex items-center gap-1.5">
+              <span class="inline-flex items-center justify-center font-bold text-xs sm:text-sm px-1.5 py-0.5 rounded-md ${
+                chileHoliday
+                  ? 'bg-red-600/30 text-red-200 border border-red-500/50 font-black'
+                  : hasWhiteboardSquare 
+                    ? 'border-2 border-indigo-400/80 text-white font-extrabold bg-indigo-950/40 shadow-sm' 
+                    : isWeekend ? 'text-slate-500' : 'text-slate-300'
+              }">
+                ${dayNumberFormatted}
+              </span>
+              ${chileHoliday ? `<span class="text-[10px] font-bold text-red-400 bg-red-500/15 px-1.5 py-0.2 rounded border border-red-500/30">${chileHoliday.badge}</span>` : ''}
+            </div>
+            <button onclick="window.openModalForNew(${day})" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-indigo-400 text-xs transition p-0.5 rounded hover:bg-slate-700/50" title="Agregar hito">
+              +
+            </button>
+          </div>
+        `;
+
+        let holidayHtml = '';
+        if (chileHoliday) {
+          holidayHtml = `
+            <div class="mb-1.5 p-1 rounded-lg bg-red-950/60 border border-red-800/60 text-[10px] text-red-200 shadow-sm">
+              <div class="font-bold flex items-center gap-1 text-red-300">
+                <span>🇨🇱</span>
+                <span class="truncate">${chileHoliday.title}</span>
+              </div>
+              <div class="text-[9px] text-red-400 truncate">${chileHoliday.subtitle}</div>
+            </div>
+          `;
+        }
+
+        let chipsHtml = `<div class="space-y-1.5 flex-1 flex flex-col justify-start">${holidayHtml}`;
+        dayMilestones.forEach(m => {
+          const tagConf = TAG_CONFIG[m.tag] || TAG_CONFIG.dev;
+          const status = getEffectiveStatus(m);
+          const isRelease = m.tag === 'release';
+          
+          chipsHtml += `
+            <div onclick="window.openModalForEdit('${m.id}')" class="cursor-pointer rounded-lg p-1.5 border ${tagConf.bg} ${tagConf.border} hover:border-indigo-400 transition transform hover:-translate-y-0.5 shadow-sm text-left ${m.completedByUser ? 'opacity-75' : ''}">
+              <div class="flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full ${tagConf.dot}"></span>
+                <span class="text-[11px] font-bold leading-tight truncate ${tagConf.text} ${m.completedByUser ? 'line-through decoration-emerald-400/80 text-slate-300' : ''}">
+                  ${m.title}
+                </span>
+              </div>
+              ${
+                isRelease && m.subtasks && m.subtasks.length > 0 
+                  ? `<div class="mt-1 space-y-0.5 hidden sm:block">
+                      ${m.subtasks.map(s => `<div class="text-[9px] text-slate-300 truncate pl-2 border-l border-rose-500/40">• ${s}</div>`).join('')}
+                    </div>` 
+                  : ''
+              }
+              <div class="mt-1.5 flex items-center justify-between gap-1">
+                <button onclick="event.stopPropagation(); window.toggleStatus('${m.id}')" title="Alternar completado" class="text-[9px] px-1.5 py-0.5 rounded transition ${STATUS_CONFIG[status].badge} hover:brightness-125 font-medium">
+                  ${STATUS_CONFIG[status].label}
+                </button>
+                ${
+                  m.assigneeName 
+                    ? `<span title="${m.assigneeName}" class="text-[9px] text-slate-400 bg-slate-800/80 px-1 py-0.5 rounded truncate max-w-[70px] border border-slate-700/50">👤 ${m.assigneeName.split(' ')[0]}</span>`
+                    : ''
+                }
+              </div>
+            </div>
+          `;
+        });
+        chipsHtml += `</div>`;
+
+        dayCell.innerHTML = dayHeaderHtml + chipsHtml;
+        grid.appendChild(dayCell);
+      }
+
+      const trailingCells = 35 - (totalDaysInSeptember + leadingEmptyDays);
+      for (let j = 1; j <= trailingCells; j++) {
+        const trailingCell = document.createElement('div');
+        trailingCell.className = 'bg-slate-900/40 p-2 border border-slate-800/40 min-h-[105px] select-none text-slate-600 text-xs font-semibold';
+        trailingCell.innerHTML = `<span class="opacity-25">0${j} Oct</span>`;
+        grid.appendChild(trailingCell);
+      }
+    }
+
+    function renderMilestoneList() {
+      const container = document.getElementById('milestones-table-container');
+      const filtered = milestones.filter(m => {
+        const matchFilter = activeFilter === 'all' || m.tag === activeFilter;
+        const matchSearch = searchQuery === '' || 
+          m.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+          (m.details && m.details.toLowerCase().includes(searchQuery.toLowerCase())) ||
+          (m.assigneeName && m.assigneeName.toLowerCase().includes(searchQuery.toLowerCase()));
+        return matchFilter && matchSearch;
+      }).sort((a, b) => a.day - b.day);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="py-8 text-center text-slate-500 text-xs">
+            No se encontraron hitos con los filtros actuales.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(m => {
+        const tagConf = TAG_CONFIG[m.tag] || TAG_CONFIG.dev;
+        const dayFormatted = m.day < 10 ? `0${m.day}` : m.day;
+        const status = getEffectiveStatus(m);
+        const isEditingThis = inlineEditingId === m.id;
+
+        if (isEditingThis) {
+          return `
+            <div class="bg-slate-900 border-2 border-indigo-500/80 rounded-xl p-4 shadow-xl space-y-3.5 transition-all">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <span class="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                  <span>✏️</span> Editando Hito (Día ${dayFormatted})
+                </span>
+                <span class="text-[11px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 font-medium">
+                  ${isFirebaseConfigured ? 'Sincronización en la nube' : 'Modo Local'}
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="sm:col-span-2">
+                  <label class="block text-[11px] font-semibold text-slate-400 mb-1">Título del Hito</label>
+                  <input type="text" id="inline-title-${m.id}" value="${m.title}" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 font-semibold">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-400 mb-1">Día de Septiembre</label>
+                  <select id="inline-day-${m.id}" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500">
+                    ${Array.from({length: 30}, (_, i) => i + 1).map(d => `
+                      <option value="${d}" ${d === m.day ? 'selected' : ''}>Día ${d < 10 ? '0' + d : d} Sep</option>
+                    `).join('')}
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-400 mb-1">Estado</label>
+                  <select id="inline-status-${m.id}" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500">
+                    <option value="auto" ${(!m.completedByUser && !m.userOverrideStatus) ? 'selected' : ''}>🤖 Auto (Fecha)</option>
+                    <option value="completed" ${m.completedByUser ? 'selected' : ''}>✅ Completado</option>
+                    <option value="pending" ${(!m.completedByUser && m.userOverrideStatus === 'pending') ? 'selected' : ''}>⏳ Pendiente</option>
+                    <option value="in_progress" ${(!m.completedByUser && m.userOverrideStatus === 'in_progress') ? 'selected' : ''}>⚡ En Progreso</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-400 mb-1">Categoría</label>
+                  <select id="inline-tag-${m.id}" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500">
+                    <option value="genesys" ${m.tag === 'genesys' ? 'selected' : ''}>Genesys</option>
+                    <option value="release" ${m.tag === 'release' ? 'selected' : ''}>Release</option>
+                    <option value="dev" ${m.tag === 'dev' ? 'selected' : ''}>Desarrollo</option>
+                    <option value="qa" ${m.tag === 'qa' ? 'selected' : ''}>Testing / QA</option>
+                    <option value="business" ${m.tag === 'business' ? 'selected' : ''}>Negocio</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-400 mb-1">Nombre Responsable</label>
+                  <input type="text" id="inline-assignee-${m.id}" value="${m.assigneeName || ''}" placeholder="Ej: Carlos Silva" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-400 mb-1">Observaciones</label>
+                <textarea id="inline-details-${m.id}" rows="2" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500">${m.details || ''}</textarea>
+              </div>
+
+              <div class="flex items-center justify-end gap-2 pt-1">
+                <button type="button" onclick="window.cancelInlineEdit()" class="px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-800 rounded-lg transition">Cancelar</button>
+                <button type="button" onclick="window.saveInlineMilestone('${m.id}')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow-lg shadow-emerald-600/30 flex items-center gap-1.5 transition active:scale-95">
+                  <span>💾</span> Guardar Hito
+                </button>
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition ${m.completedByUser ? 'bg-slate-900/50' : ''}">
+            <div class="flex items-start sm:items-center gap-3">
+              <div class="flex flex-col items-center justify-center w-11 h-11 rounded-lg bg-slate-800 border border-slate-700 text-white font-bold shrink-0">
+                <span class="text-[9px] uppercase tracking-wider text-slate-400">Sep</span>
+                <span class="text-sm font-black text-indigo-400">${dayFormatted}</span>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 class="text-sm font-bold text-white ${m.completedByUser ? 'line-through text-slate-400' : ''}">${m.title}</h4>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full ${tagConf.bg} ${tagConf.text} border ${tagConf.border} font-medium">
+                    ${tagConf.label}
+                  </span>
+                  ${m.completedByUser ? '<span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">Completado</span>' : ''}
+                </div>
+                <p class="text-xs text-slate-400 mt-0.5">${m.details || 'Sin descripción adicional'}</p>
+                ${
+                  m.assigneeName 
+                    ? `<div class="mt-1.5 flex flex-wrap items-center gap-2 text-xs">
+                        <span class="inline-flex items-center gap-1.5 bg-slate-800 text-indigo-300 px-2.5 py-0.5 rounded-md border border-slate-700 font-medium">
+                          👤 ${m.assigneeName}
+                        </span>
+                        ${
+                          m.assigneeEmail 
+                            ? `<a href="mailto:${m.assigneeEmail}" class="text-slate-400 hover:text-indigo-400 text-xs flex items-center gap-1 transition underline decoration-dotted">
+                                ✉️ ${m.assigneeEmail}
+                              </a>` 
+                            : ''
+                        }
+                      </div>`
+                    : ''
+                }
+                ${
+                  m.subtasks && m.subtasks.length > 0 
+                    ? `<div class="flex flex-wrap gap-1.5 mt-1.5">
+                        ${m.subtasks.map(st => `<span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700/60">• ${st}</span>`).join('')}
+                      </div>`
+                    : ''
+                }
+                ${
+                  m.lastModifiedByName 
+                    ? `<div class="mt-1 text-[10px] text-slate-500">Editado por: ${m.lastModifiedByName}</div>`
+                    : ''
+                }
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 self-end sm:self-center">
+              <button onclick="window.toggleStatus('${m.id}')" title="Alternar completado" class="text-xs px-2.5 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 ${STATUS_CONFIG[status].badge} hover:brightness-110 active:scale-95 shadow-sm">
+                <span>${m.completedByUser ? '✓' : '◯'}</span>
+                <span>${STATUS_CONFIG[status].label}</span>
+              </button>
+              
+              <button onclick="window.startInlineEdit('${m.id}')" class="px-2.5 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-slate-700 hover:border-indigo-500/50 rounded-lg transition flex items-center gap-1 active:scale-95">
+                <span>✏️</span> Editar
+              </button>
+
+              <button onclick="window.openModalForEdit('${m.id}')" class="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition" title="Editar en modal">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function syncMilestoneToCloud(milestoneData) {
+      if (!isFirebaseConfigured || !auth || !auth.currentUser) {
+        saveMilestonesLocal();
+        showToast(`Hito guardado localmente: "${milestoneData.title}"`, '💾');
+        return;
+      }
+      try {
+        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'milestones', milestoneData.id);
+        const dataToSave = {
+          ...milestoneData,
+          lastModifiedByUid: auth.currentUser.uid,
+          lastModifiedByName: auth.currentUser.displayName || auth.currentUser.email,
+          updatedAt: new Date().toISOString()
+        };
+        await setDoc(docRef, dataToSave, { merge: true });
+        showToast(`Hito sincronizado en la nube: "${milestoneData.title}"`, '☁️');
+      } catch (err) {
+        console.error("Cloud save error:", err);
+        saveMilestonesLocal();
+        showToast('Guardado local (Error al conectar con la nube)', '⚠️');
+      }
+    }
+
+    async function deleteMilestoneFromCloud(id) {
+      if (!isFirebaseConfigured || !auth || !auth.currentUser) {
+        saveMilestonesLocal();
+        showToast('Hito eliminado localmente', '🗑️');
+        return;
+      }
+      try {
+        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'milestones', id);
+        await deleteDoc(docRef);
+        showToast('Hito eliminado de la nube', '🗑️');
+      } catch (err) {
+        console.error("Cloud delete error:", err);
+        saveMilestonesLocal();
+        showToast('Eliminado en modo local', '⚠️');
+      }
+    }
+
+    function subscribeToMilestones() {
+      if (!isFirebaseConfigured || !db || !auth || !auth.currentUser) return;
+      
+      try {
+        const milestonesCol = collection(db, 'artifacts', appId, 'public', 'data', 'milestones');
+
+        // Escuchar cambios en tiempo real
+        onSnapshot(milestonesCol, async (snapshot) => {
+          if (snapshot.empty) {
+            for (const initM of INITIAL_MILESTONES) {
+              const mRef = doc(db, 'artifacts', appId, 'public', 'data', 'milestones', initM.id);
+              await setDoc(mRef, {
+                ...initM,
+                updatedAt: new Date().toISOString(),
+                createdByName: 'Sistema PVU F2.1'
+              });
+            }
+            return;
+          }
+
+          const cloudMilestones = [];
+          snapshot.forEach((docSnapshot) => {
+            cloudMilestones.push({ id: docSnapshot.id, ...docSnapshot.data() });
+          });
+
+          milestones = cloudMilestones;
+          document.getElementById('sync-status-text').innerText = 'En vivo (Nube Activa)';
+          renderAll();
+        }, (error) => {
+          console.warn("Firestore onSnapshot note:", error);
+          document.getElementById('sync-status-text').innerText = 'Modo Local (Offline)';
+        });
+      } catch (e) {
+        console.warn("Subscription note:", e);
+      }
+    }
+
+    const authModal = document.getElementById('auth-modal-backdrop');
+    function openAuthModal() {
+      if (!isFirebaseConfigured) {
+        openConfigModal();
+        showToast('Primero configura tus claves de Firebase', '⚙️');
+        return;
+      }
+      authModal.classList.remove('hidden');
+      authModal.classList.add('flex');
+    }
+    function closeAuthModal() {
+      authModal.classList.add('hidden');
+      authModal.classList.remove('flex');
+    }
+    document.getElementById('auth-modal-close').addEventListener('click', closeAuthModal);
+
+    // Modal de Configuración de Firebase
+    const configModal = document.getElementById('firebase-config-modal-backdrop');
+    function openConfigModal() {
+      document.getElementById('cfg-apiKey').value = firebaseConfig.apiKey.includes('xxxx') ? '' : (firebaseConfig.apiKey || '');
+      document.getElementById('cfg-authDomain').value = firebaseConfig.authDomain.includes('tu-proyecto') ? '' : (firebaseConfig.authDomain || '');
+      document.getElementById('cfg-projectId').value = firebaseConfig.projectId.includes('tu-proyecto') ? '' : (firebaseConfig.projectId || '');
+      document.getElementById('cfg-storageBucket').value = firebaseConfig.storageBucket.includes('tu-proyecto') ? '' : (firebaseConfig.storageBucket || '');
+      document.getElementById('cfg-appId').value = firebaseConfig.appId.includes('abcdef') ? '' : (firebaseConfig.appId || '');
+
+      configModal.classList.remove('hidden');
+      configModal.classList.add('flex');
+    }
+    function closeConfigModal() {
+      configModal.classList.add('hidden');
+      configModal.classList.remove('flex');
+    }
+
+    document.getElementById('btn-open-firebase-config').addEventListener('click', openConfigModal);
+    document.getElementById('firebase-modal-close').addEventListener('click', closeConfigModal);
+    document.getElementById('cfg-btn-cancel').addEventListener('click', closeConfigModal);
+
+    document.getElementById('cfg-btn-save').addEventListener('click', () => {
+      const apiKey = document.getElementById('cfg-apiKey').value.trim();
+      const authDomain = document.getElementById('cfg-authDomain').value.trim();
+      const projectId = document.getElementById('cfg-projectId').value.trim();
+      const storageBucket = document.getElementById('cfg-storageBucket').value.trim();
+      const appIdVal = document.getElementById('cfg-appId').value.trim();
+
+      if (!apiKey || apiKey.length < 10) {
+        showToast('Ingresa una API Key válida de Firebase', '⚠️');
+        return;
+      }
+
+      const newConfig = {
+        apiKey,
+        authDomain: authDomain || `${projectId}.firebaseapp.com`,
+        projectId,
+        storageBucket: storageBucket || `${projectId}.appspot.com`,
+        appId: appIdVal
+      };
+
+      try {
+        localStorage.setItem('pvu_firebase_config_custom', JSON.stringify(newConfig));
+        showToast('¡Claves guardadas! Recargando para conectar...', '🔄');
+        setTimeout(() => window.location.reload(), 1000);
+      } catch(e) {
+        showToast('Error al guardar configuración', '❌');
+      }
+    });
+
+    document.getElementById('cfg-btn-clear').addEventListener('click', () => {
+      localStorage.removeItem('pvu_firebase_config_custom');
+      showToast('Claves personalizadas borradas', '🗑️');
+      setTimeout(() => window.location.reload(), 800);
+    });
+
+    async function handleGoogleLogin() {
+      if (!isFirebaseConfigured || !auth) {
+        closeAuthModal();
+        openConfigModal();
+        showToast('Primero ingresa tus claves de Firebase en ⚙️ Firebase', '⚠️');
+        return;
+      }
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      try {
+        showToast('Conectando con Google...', '🔄');
+        const result = await signInWithPopup(auth, provider);
+        closeAuthModal();
+        showToast(`¡Bienvenido/a, ${result.user.displayName || 'Usuario'}!`, '👋');
+      } catch (err) {
+        console.warn("Google Auth notice:", err);
+        if (err.code !== 'auth/popup-closed-by-user') {
+          showToast('Error de conexión con Google Auth', '⚠️');
+        }
+      }
+    }
+
+    async function handleLogout() {
+      if (!auth) return;
+      try {
+        await signOut(auth);
+        showToast('Sesión cerrada correctamente', '👋');
+      } catch (err) {
+        console.warn("Signout notice:", err);
+      }
+    }
+
+    document.getElementById('btn-header-login').addEventListener('click', openAuthModal);
+    document.getElementById('btn-modal-google-login').addEventListener('click', handleGoogleLogin);
+    document.getElementById('btn-logout').addEventListener('click', handleLogout);
+
+    if (isFirebaseConfigured && auth) {
+      try {
+        onAuthStateChanged(auth, (user) => {
+          currentUser = user;
+          const profileBadge = document.getElementById('user-profile-badge');
+          const headerLoginBtn = document.getElementById('btn-header-login');
+          const userAvatar = document.getElementById('user-avatar');
+          const userName = document.getElementById('user-display-name');
+          const userEmail = document.getElementById('user-display-email');
+
+          if (user) {
+            headerLoginBtn.classList.add('hidden');
+            profileBadge.classList.remove('hidden');
+            profileBadge.classList.add('flex');
+            userName.innerText = user.displayName || 'Usuario Google';
+            userEmail.innerText = user.email || '';
+            if (user.photoURL) {
+              userAvatar.src = user.photoURL;
+            }
+            closeAuthModal();
+            subscribeToMilestones();
+          } else {
+            profileBadge.classList.add('hidden');
+            profileBadge.classList.remove('flex');
+            headerLoginBtn.classList.remove('hidden');
+            document.getElementById('sync-status-text').innerText = 'Listo (Inicia sesión para sincronizar)';
+          }
+        });
+      } catch (err) {
+        console.warn("Auth listener notice:", err);
+        document.getElementById('sync-status-text').innerText = 'Modo Local (Offline)';
+      }
+    } else {
+      // Estado cuando no hay credenciales configuradas
+      document.getElementById('sync-status-text').innerText = 'Modo Local (Offline)';
+    }
+
+    window.startInlineEdit = function(id) {
+      inlineEditingId = id;
+      renderMilestoneList();
+      const input = document.getElementById(`inline-title-${id}`);
+      if (input) { input.focus(); input.select(); }
+    };
+
+    window.cancelInlineEdit = function() {
+      inlineEditingId = null;
+      renderMilestoneList();
+    };
+
+    window.saveInlineMilestone = async function(id) {
+      const targetIndex = milestones.findIndex(m => m.id === id);
+      if (targetIndex === -1) return;
+
+      const titleInput = document.getElementById(`inline-title-${id}`);
+      const daySelect = document.getElementById(`inline-day-${id}`);
+      const statusSelect = document.getElementById(`inline-status-${id}`);
+      const tagSelect = document.getElementById(`inline-tag-${id}`);
+      const assigneeInput = document.getElementById(`inline-assignee-${id}`);
+      const detailsInput = document.getElementById(`inline-details-${id}`);
+
+      const newTitle = titleInput ? titleInput.value.trim() : milestones[targetIndex].title;
+      if (!newTitle) {
+        showToast('El título del hito no puede quedar vacío', '⚠️');
+        return;
+      }
+
+      const newDay = daySelect ? parseInt(daySelect.value, 10) : milestones[targetIndex].day;
+      const statusVal = statusSelect ? statusSelect.value : 'auto';
+      const newTag = tagSelect ? tagSelect.value : milestones[targetIndex].tag;
+      const newAssignee = assigneeInput ? assigneeInput.value.trim() : '';
+      const newDetails = detailsInput ? detailsInput.value.trim() : '';
+
+      const updatedMilestone = {
+        ...milestones[targetIndex],
+        day: newDay,
+        title: newTitle,
+        tag: newTag,
+        completedByUser: statusVal === 'completed',
+        userOverrideStatus: statusVal === 'auto' ? null : (statusVal === 'completed' ? null : statusVal),
+        assigneeName: newAssignee,
+        details: newDetails
+      };
+
+      inlineEditingId = null;
+      milestones[targetIndex] = updatedMilestone;
+      saveMilestonesLocal();
+      renderAll();
+      await syncMilestoneToCloud(updatedMilestone);
+    };
+
+    window.toggleStatus = async function(id) {
+      const item = milestones.find(m => m.id === id);
+      if (!item) return;
+
+      if (!item.completedByUser) {
+        item.completedByUser = true;
+        item.userOverrideStatus = 'completed';
+      } else {
+        item.completedByUser = false;
+        item.userOverrideStatus = null;
+      }
+
+      saveMilestonesLocal();
+      renderAll();
+      await syncMilestoneToCloud(item);
+    };
+
+    function populateDaySelector() {
+      const select = document.getElementById('form-day');
+      select.innerHTML = '';
+      for (let i = 1; i <= 30; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.innerText = `Día ${i < 10 ? '0' + i : i} de Septiembre`;
+        select.appendChild(opt);
+      }
+    }
+
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const milestoneForm = document.getElementById('milestone-form');
+    const btnDelete = document.getElementById('form-btn-delete');
+    let currentFormSubtasks = [];
+
+    const btnHeaderSave = document.getElementById('modal-header-btn-save');
+    if (btnHeaderSave) {
+      btnHeaderSave.addEventListener('click', () => milestoneForm.requestSubmit());
+    }
+
+    function renderFormSubtasks() {
+      const container = document.getElementById('form-subtasks-list');
+      if (!container) return;
+      if (currentFormSubtasks.length === 0) {
+        container.innerHTML = `<p class="text-[11px] text-slate-500 italic p-1">No hay sub-tareas configuradas.</p>`;
+        return;
+      }
+      container.innerHTML = currentFormSubtasks.map((st, idx) => `
+        <div class="flex items-center justify-between gap-2 bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700/60 text-xs text-slate-200">
+          <span class="truncate flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></span>
+            ${st}
+          </span>
+          <button type="button" onclick="window.removeSubtask(${idx})" class="text-rose-400 hover:text-rose-300 p-0.5 rounded hover:bg-rose-500/10 transition">✕</button>
+        </div>
+      `).join('');
+    }
+
+    window.removeSubtask = function(index) {
+      currentFormSubtasks.splice(index, 1);
+      renderFormSubtasks();
+    };
+
+    const btnAddSubtask = document.getElementById('btn-add-subtask');
+    const inputSubtask = document.getElementById('form-subtask-input');
+    function handleAddSubtask() {
+      const val = inputSubtask.value.trim();
+      if (!val) return;
+      currentFormSubtasks.push(val);
+      inputSubtask.value = '';
+      renderFormSubtasks();
+      inputSubtask.focus();
+    }
+    if (btnAddSubtask && inputSubtask) {
+      btnAddSubtask.addEventListener('click', handleAddSubtask);
+      inputSubtask.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); handleAddSubtask(); }
+      });
+    }
+
+    window.openModalForNew = function(dayNumber = 1) {
+      document.getElementById('modal-title').innerHTML = `<span>✨</span> Crear Nuevo Hito`;
+      document.getElementById('form-id').value = '';
+      document.getElementById('form-day').value = dayNumber;
+      document.getElementById('form-title').value = '';
+      document.getElementById('form-tag').value = 'dev';
+      document.getElementById('form-status').value = 'auto';
+      document.getElementById('form-assignee-name').value = '';
+      document.getElementById('form-assignee-email').value = '';
+      document.getElementById('form-details').value = '';
+      currentFormSubtasks = [];
+      renderFormSubtasks();
+      btnDelete.classList.add('hidden');
+      modalBackdrop.classList.remove('hidden');
+      modalBackdrop.classList.add('flex');
+    };
+
+    window.openModalForEdit = function(id) {
+      const item = milestones.find(m => m.id === id);
+      if (!item) return;
+
+      document.getElementById('modal-title').innerHTML = `<span>✏️</span> Editar Hito`;
+      document.getElementById('form-id').value = item.id;
+      document.getElementById('form-day').value = item.day;
+      document.getElementById('form-title').value = item.title;
+      document.getElementById('form-tag').value = item.tag || 'dev';
+      document.getElementById('form-status').value = item.completedByUser ? 'completed' : (item.userOverrideStatus || 'auto');
+      document.getElementById('form-assignee-name').value = item.assigneeName || '';
+      document.getElementById('form-assignee-email').value = item.assigneeEmail || '';
+      document.getElementById('form-details').value = item.details || '';
+      currentFormSubtasks = Array.isArray(item.subtasks) ? [...item.subtasks] : [];
+      renderFormSubtasks();
+
+      btnDelete.classList.remove('hidden');
+      modalBackdrop.classList.remove('hidden');
+      modalBackdrop.classList.add('flex');
+    };
+
+    function closeModal() {
+      modalBackdrop.classList.add('hidden');
+      modalBackdrop.classList.remove('flex');
+    }
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('form-btn-cancel').addEventListener('click', closeModal);
+
+    milestoneForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('form-id').value;
+      const day = parseInt(document.getElementById('form-day').value, 10);
+      const title = document.getElementById('form-title').value.trim();
+      const tag = document.getElementById('form-tag').value;
+      const statusValue = document.getElementById('form-status').value;
+      const assigneeName = document.getElementById('form-assignee-name').value.trim();
+      const assigneeEmail = document.getElementById('form-assignee-email').value.trim();
+      const details = document.getElementById('form-details').value.trim();
+
+      if (!title) return;
+
+      const completedByUser = statusValue === 'completed';
+      const userOverrideStatus = statusValue === 'auto' ? null : (statusValue === 'completed' ? null : statusValue);
+
+      const targetId = id || ('m_' + Date.now());
+      const milestoneRecord = {
+        id: targetId,
+        day,
+        title,
+        tag,
+        completedByUser,
+        userOverrideStatus,
+        assigneeName,
+        assigneeEmail,
+        details,
+        subtasks: [...currentFormSubtasks]
+      };
+
+      if (id) {
+        const index = milestones.findIndex(m => m.id === id);
+        if (index !== -1) milestones[index] = milestoneRecord;
+      } else {
+        milestones.push(milestoneRecord);
+      }
+
+      saveMilestonesLocal();
+      renderAll();
+      closeModal();
+      await syncMilestoneToCloud(milestoneRecord);
+    });
+
+    btnDelete.addEventListener('click', async () => {
+      const id = document.getElementById('form-id').value;
+      if (!id) return;
+      milestones = milestones.filter(m => m.id !== id);
+      saveMilestonesLocal();
+      renderAll();
+      closeModal();
+      await deleteMilestoneFromCloud(id);
+    });
+
+    function generateIcsBlob() {
+      let icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//PVU Plan Integracion F2.1 Septiembre 2026//CL',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'X-WR-CALNAME:PVU Plan Integracion F2.1',
+        'X-WR-TIMEZONE:America/Santiago'
+      ];
+
+      Object.entries(CHILE_HOLIDAYS_SEP_2026).forEach(([dayNum, hol]) => {
+        const d = parseInt(dayNum, 10);
+        const dayPadded = d < 10 ? `0${d}` : d;
+        const nextDay = d + 1;
+        const nextDayPadded = nextDay < 10 ? `0${nextDay}` : nextDay;
+
+        icsContent.push('BEGIN:VEVENT');
+        icsContent.push(`UID:feriado-chile-202609${dayPadded}@pvu-f21.cl`);
+        icsContent.push(`DTSTAMP:20260901T000000Z`);
+        icsContent.push(`DTSTART;VALUE=DATE:202609${dayPadded}`);
+        icsContent.push(`DTEND;VALUE=DATE:202609${nextDayPadded}`);
+        icsContent.push(`SUMMARY:🇨🇱 Feriado Chile: ${hol.title}`);
+        icsContent.push(`DESCRIPTION:${hol.subtitle} - ${hol.desc}`);
+        icsContent.push('TRANSP:TRANSPARENT');
+        icsContent.push('STATUS:CONFIRMED');
+        icsContent.push('END:VEVENT');
+      });
+
+      milestones.forEach(m => {
+        const dayPadded = m.day < 10 ? `0${m.day}` : m.day;
+        const dtStart = `202609${dayPadded}`;
+        const nextDay = m.day + 1;
+        const nextDayPadded = nextDay < 10 ? `0${nextDay}` : nextDay;
+
+        let description = m.details || '';
+        if (m.assigneeName) description += ` | Responsable: ${m.assigneeName}`;
+        if (m.subtasks && m.subtasks.length > 0) description += ' | Subtareas: ' + m.subtasks.join(', ');
+
+        icsContent.push('BEGIN:VEVENT');
+        icsContent.push(`UID:milestone-${m.id}-202609@pvu-f21.cl`);
+        icsContent.push(`DTSTAMP:20260901T000000Z`);
+        icsContent.push(`DTSTART;VALUE=DATE:${dtStart}`);
+        icsContent.push(`DTEND;VALUE=DATE:${nextDayPadded}`);
+        icsContent.push(`SUMMARY:PVU F2.1: ${m.title}`);
+        icsContent.push(`DESCRIPTION:${description}`);
+        icsContent.push('END:VEVENT');
+      });
+
+      icsContent.push('END:VCALENDAR');
+      return new Blob([icsContent.join('\r\n')], { type: 'text/calendar;charset=utf-8;' });
+    }
+
+    function triggerIcsDownload() {
+      const blob = generateIcsBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'PVU_Plan_Integracion_F2.1_Chile.ics';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Descargando calendario iCal');
+    }
+
+    document.getElementById('btn-export-ics').addEventListener('click', triggerIcsDownload);
+
+    const syncModal = document.getElementById('sync-modal-backdrop');
+    document.getElementById('btn-sync-personal').addEventListener('click', () => {
+      syncModal.classList.remove('hidden');
+      syncModal.classList.add('flex');
+    });
+    document.getElementById('sync-modal-close').addEventListener('click', () => {
+      syncModal.classList.add('hidden');
+      syncModal.classList.remove('flex');
+    });
+    document.getElementById('sync-google-cal').addEventListener('click', () => {
+      triggerIcsDownload();
+      window.open('https://calendar.google.com/calendar/r/settings/export', '_blank');
+    });
+    document.getElementById('sync-outlook-cal').addEventListener('click', () => {
+      triggerIcsDownload();
+      window.open('https://outlook.live.com/calendar/0/addcalendar', '_blank');
+    });
+    document.getElementById('sync-apple-cal').addEventListener('click', triggerIcsDownload);
+    document.getElementById('sync-direct-ics').addEventListener('click', triggerIcsDownload);
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('active', 'bg-indigo-600', 'text-white');
+          b.classList.add('bg-slate-800', 'text-slate-300');
+        });
+        btn.classList.add('active', 'bg-indigo-600', 'text-white');
+        btn.classList.remove('bg-slate-800', 'text-slate-300');
+        activeFilter = btn.getAttribute('data-filter');
+        renderAll();
+      });
+    });
+
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      renderAll();
+    });
+
+    document.getElementById('btn-new-milestone').addEventListener('click', () => {
+      window.openModalForNew(1);
+    });
+
+    function renderAll() {
+      updateMetrics();
+      renderCalendar();
+      renderMilestoneList();
+    }
+
+    populateDaySelector();
+    renderAll();
+  </script>
+</body>
+</html>
