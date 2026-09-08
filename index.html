@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PVU Plan Integracion F2.1 - Septiembre 2026</title>
+  <title>PVU Hitos Integracion + Canales - Septiembre 2026</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -86,11 +86,6 @@
       <!-- Acciones y Perfil de Usuario -->
       <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-end">
         
-        <!-- Botón Configurar Firebase -->
-        <button id="btn-open-firebase-config" class="px-2.5 py-2 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 transition flex items-center gap-1.5 active:scale-95 shadow-sm" title="Configurar credenciales de Firebase">
-          <span>⚙️</span> Firebase
-        </button>
-
         <!-- Perfil cuando el usuario inicia sesión -->
         <div id="user-profile-badge" class="hidden items-center gap-2 bg-slate-800/90 border border-slate-700/80 rounded-xl px-2.5 py-1.5 shadow-sm">
           <img id="user-avatar" class="w-7 h-7 rounded-full border border-indigo-400/50 object-cover" src="https://placehold.co/100x100/4f46e5/ffffff?text=U" alt="Usuario" onerror="this.src='https://placehold.co/100x100/4f46e5/ffffff?text=U'">
@@ -262,66 +257,6 @@
       <button type="button" id="auth-modal-close" class="mt-4 text-xs text-slate-400 hover:text-white underline decoration-dotted">
         Cerrar y continuar en modo local
       </button>
-    </div>
-  </div>
-
-  <!-- Modal para Configuración de Credenciales de Firebase -->
-  <div id="firebase-config-modal-backdrop" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-left">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <div class="flex items-center gap-2">
-          <span class="text-xl">⚙️</span>
-          <div>
-            <h3 class="text-base font-bold text-white">Configuración de Firebase</h3>
-            <p class="text-xs text-slate-400">Pega aquí las claves de tu proyecto de Firebase</p>
-          </div>
-        </div>
-        <button id="firebase-modal-close" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
-          ✕
-        </button>
-      </div>
-
-      <div class="mt-4 space-y-3">
-        <p class="text-xs text-slate-300 leading-relaxed">
-          Puedes ingresar tus credenciales directamente aquí para guardarlas en este navegador, o editarlas en el archivo <code class="text-indigo-300 font-mono">index.html</code>:
-        </p>
-        <div>
-          <label class="block text-[11px] font-semibold text-slate-300 mb-1">API Key</label>
-          <input type="text" id="cfg-apiKey" placeholder="AIzaSy..." class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Auth Domain</label>
-            <input type="text" id="cfg-authDomain" placeholder="proyecto.firebaseapp.com" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Project ID</label>
-            <input type="text" id="cfg-projectId" placeholder="tu-proyecto" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Storage Bucket</label>
-            <input type="text" id="cfg-storageBucket" placeholder="proyecto.appspot.com" class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-300 mb-1">App ID</label>
-            <input type="text" id="cfg-appId" placeholder="1:123456:web:abcd..." class="w-full bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-5 flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
-        <button type="button" id="cfg-btn-clear" class="px-3 py-2 text-xs font-medium text-rose-400 hover:bg-rose-500/10 rounded-lg transition mr-auto">
-          Borrar Claves
-        </button>
-        <button type="button" id="cfg-btn-cancel" class="px-3 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800 rounded-lg transition">
-          Cancelar
-        </button>
-        <button type="button" id="cfg-btn-save" class="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-md transition active:scale-95">
-          💾 Guardar y Conectar
-        </button>
-      </div>
     </div>
   </div>
 
@@ -505,9 +440,7 @@
       signInWithPopup, 
       GoogleAuthProvider, 
       signOut, 
-      onAuthStateChanged,
-      signInWithCustomToken,
-      signInAnonymously 
+      onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { 
       getFirestore, 
@@ -519,30 +452,17 @@
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // =========================================================================
-    // 👉 PASO 4 (ACTIVIDAD 5): PEGA AQUÍ TUS CREDENCIALES EXACTAS DE FIREBASE
+    // 👉 PASO 4: PEGA AQUÍ TUS CREDENCIALES EXACTAS DE FIREBASE
     // =========================================================================
-    let firebaseConfig = {
-      apiKey: "AIzaSyD-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-      authDomain: "tu-proyecto.firebaseapp.com",
-      projectId: "tu-proyecto",
-      storageBucket: "tu-proyecto.appspot.com",
-      messagingSenderId: "123456789012",
-      appId: "1:123456789012:web:abcdef1234567890abcdef"
+    const firebaseConfig = {
+     apiKey: "AIzaSyCeUDXV_NjchpemQZS8aapaT3mkndvhCTY",
+     authDomain: "calendar-hitosv1.firebaseapp.com",
+     projectId: "calendar-hitosv1",
+     storageBucket: "calendar-hitosv1.firebasestorage.app",
+     messagingSenderId: "362677133650",
+     appId: "1:362677133650:web:213faafcc19ee7d69e9a8b"
     };
     // =========================================================================
-
-    // Cargar credenciales guardadas en el navegador si existen
-    try {
-      const storedCfg = localStorage.getItem('pvu_firebase_config_custom');
-      if (storedCfg) {
-        const parsed = JSON.parse(storedCfg);
-        if (parsed && parsed.apiKey) {
-          firebaseConfig = { ...firebaseConfig, ...parsed };
-        }
-      }
-    } catch(e) {
-      console.warn("Storage check:", e);
-    }
 
     // Verificación de credenciales reales vs placeholders
     function hasValidFirebaseKeys(cfg) {
@@ -574,7 +494,7 @@
         console.warn("Firebase initialization note:", err);
       }
     } else {
-      console.info("Firebase: Operando en modo local/offline. Ingresa tus claves para activar la sincronización en la nube.");
+      console.info("Firebase: Operando en modo local. Pega tus credenciales en el objeto firebaseConfig de index.html.");
     }
 
     const CHILE_HOLIDAYS_SEP_2026 = {
@@ -1141,8 +1061,7 @@
     const authModal = document.getElementById('auth-modal-backdrop');
     function openAuthModal() {
       if (!isFirebaseConfigured) {
-        openConfigModal();
-        showToast('Primero configura tus claves de Firebase', '⚙️');
+        showToast('Configura tus claves en index.html antes de iniciar sesión', '⚠️');
         return;
       }
       authModal.classList.remove('hidden');
@@ -1154,67 +1073,10 @@
     }
     document.getElementById('auth-modal-close').addEventListener('click', closeAuthModal);
 
-    // Modal de Configuración de Firebase
-    const configModal = document.getElementById('firebase-config-modal-backdrop');
-    function openConfigModal() {
-      document.getElementById('cfg-apiKey').value = firebaseConfig.apiKey.includes('xxxx') ? '' : (firebaseConfig.apiKey || '');
-      document.getElementById('cfg-authDomain').value = firebaseConfig.authDomain.includes('tu-proyecto') ? '' : (firebaseConfig.authDomain || '');
-      document.getElementById('cfg-projectId').value = firebaseConfig.projectId.includes('tu-proyecto') ? '' : (firebaseConfig.projectId || '');
-      document.getElementById('cfg-storageBucket').value = firebaseConfig.storageBucket.includes('tu-proyecto') ? '' : (firebaseConfig.storageBucket || '');
-      document.getElementById('cfg-appId').value = firebaseConfig.appId.includes('abcdef') ? '' : (firebaseConfig.appId || '');
-
-      configModal.classList.remove('hidden');
-      configModal.classList.add('flex');
-    }
-    function closeConfigModal() {
-      configModal.classList.add('hidden');
-      configModal.classList.remove('flex');
-    }
-
-    document.getElementById('btn-open-firebase-config').addEventListener('click', openConfigModal);
-    document.getElementById('firebase-modal-close').addEventListener('click', closeConfigModal);
-    document.getElementById('cfg-btn-cancel').addEventListener('click', closeConfigModal);
-
-    document.getElementById('cfg-btn-save').addEventListener('click', () => {
-      const apiKey = document.getElementById('cfg-apiKey').value.trim();
-      const authDomain = document.getElementById('cfg-authDomain').value.trim();
-      const projectId = document.getElementById('cfg-projectId').value.trim();
-      const storageBucket = document.getElementById('cfg-storageBucket').value.trim();
-      const appIdVal = document.getElementById('cfg-appId').value.trim();
-
-      if (!apiKey || apiKey.length < 10) {
-        showToast('Ingresa una API Key válida de Firebase', '⚠️');
-        return;
-      }
-
-      const newConfig = {
-        apiKey,
-        authDomain: authDomain || `${projectId}.firebaseapp.com`,
-        projectId,
-        storageBucket: storageBucket || `${projectId}.appspot.com`,
-        appId: appIdVal
-      };
-
-      try {
-        localStorage.setItem('pvu_firebase_config_custom', JSON.stringify(newConfig));
-        showToast('¡Claves guardadas! Recargando para conectar...', '🔄');
-        setTimeout(() => window.location.reload(), 1000);
-      } catch(e) {
-        showToast('Error al guardar configuración', '❌');
-      }
-    });
-
-    document.getElementById('cfg-btn-clear').addEventListener('click', () => {
-      localStorage.removeItem('pvu_firebase_config_custom');
-      showToast('Claves personalizadas borradas', '🗑️');
-      setTimeout(() => window.location.reload(), 800);
-    });
-
     async function handleGoogleLogin() {
       if (!isFirebaseConfigured || !auth) {
         closeAuthModal();
-        openConfigModal();
-        showToast('Primero ingresa tus claves de Firebase en ⚙️ Firebase', '⚠️');
+        showToast('Configura tus claves en index.html', '⚠️');
         return;
       }
       const provider = new GoogleAuthProvider();
